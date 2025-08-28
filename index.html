@@ -12,15 +12,17 @@
       <img src="B12-A5-Emergency-Hotline/assets/logo.png" alt="Logo" class="ml-1 w-6 h-6 inline">
       <span class="font-bold">Emergency Service</span>
     </div>
-    <div class="flex items-center space-x-4">
-      <span id="likes-count" class="bg-[#41FF6B] bg-opacity-10 shadow px-4 py-0.5 rounded-[50px] flex items-center">
-        0 <img src="B12-A5-Emergency-Hotline/assets/heart.png" alt="Heart" class="ml-1 w-4 h-4 inline">
-      </span>
+   <div class="flex items-center space-x-4">
+     <span id="likes-count" class="bg-[#41FF6B] bg-opacity-10 shadow px-4 py-0.5 rounded-[50px] flex items-center">
+  0 <img src="B12-A5-Emergency-Hotline/assets/heart.png" alt="Heart" class="ml-1 w-4 h-4 inline">
+</span>
+
       <span id="coins-count" class="bg-[#41FF6B] bg-opacity-10 px-2 py-0.5 flex items-center rounded-[50px]">
-        100 <img src="B12-A5-Emergency-Hotline/assets/coin.png" alt="Heart" class="ml-1 w-4 h-4 inline">
+        100 <img src="B12-A5-Emergency-Hotline/assets/coin.png" alt="coin" class="ml-1 w-4 h-4 inline">
       </span>
       <span id="copies-count" class="bg-green-500 text-white px-2 py-0.5 rounded-[50px] text-sm">0 Copy</span>
     </div>
+
   </nav>
 
   <section class="bg-gradient-to-r from-[#013223] via-[#006747] to-[#013223] text-white py-12 text-center">
@@ -251,3 +253,108 @@
       </div>
 
     </div>
+
+    <!-- Call History -->
+    <div class="bg-white rounded-lg shadow p-3 md:w-1/4 text-sm">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold flex items-center">
+          <img src="B12-A5-Emergency-Hotline/assets/call history.png" alt="History Icon" class="mr-2 w-4 h-4"> Call History
+        </h2>
+        <button id="clear-history" class="bg-green-500 text-white px-3 py-1 rounded text-xs">Clear</button>
+      </div>
+      <div id="history-list" class="space-y-2 text-sm"></div>
+    </div>
+  </main>
+
+  <script>
+    let likes = 0;
+    let coins = 100;
+    let copies = 0;
+    let history = [];
+
+    const likesCount = document.getElementById('likes-count');
+    const coinsCount = document.getElementById('coins-count');
+    const copiesCount = document.getElementById('copies-count');
+    const historyList = document.getElementById('history-list');
+    const clearHistoryBtn = document.getElementById('clear-history');
+  
+
+   function updateCounts() {
+   likesCount.innerHTML = `${likes} <img src="B12-A5-Emergency-Hotline/assets/heart.png" alt="Heart" class="ml-1 w-4 h-4 inline">`;
+   coinsCount.innerHTML = `${coins} <img src="B12-A5-Emergency-Hotline/assets/coin.png" alt="Coin" class="ml-1 w-4 h-4 inline">`;
+   copiesCount.innerHTML = `${copies} Copy`;
+}
+
+likesCount.addEventListener('click', () => {
+    likes++;                // increase the likes count
+    updateCounts();         
+
+    // Add a quick "pop" animation
+    likesCount.classList.add('scale-110');
+    setTimeout(() => {
+      likesCount.classList.remove('scale-110');
+    }, 150); // animation lasts 150ms
+  });
+
+
+
+
+    function renderHistory() {
+      historyList.innerHTML = '';
+      history.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('bg-gray-100', 'p-2', 'rounded');
+        div.innerHTML = `
+          <p class="font-bold">${item.name}</p>
+          <p>${item.number}</p>
+          <p class="text-sm text-gray-500">${item.time}</p>
+        `;
+        historyList.appendChild(div);
+      });
+    }
+
+    document.querySelectorAll('.heart-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        likes++;
+        updateCounts();
+      });
+    });
+
+    document.querySelectorAll('.call-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.name;
+        const number = btn.dataset.number;
+        if (coins < 20) {
+          alert('Insufficient coins to make a call.');
+          return;
+        }
+        coins -= 20;
+        alert(`Calling ${name} at ${number}`);
+        const time = new Date().toLocaleTimeString();
+        history.push({ name, number, time });
+        renderHistory();
+        updateCounts();
+      });
+    });
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const number = btn.dataset.number;
+        navigator.clipboard.writeText(number).then(() => {
+          copies++;
+          alert(`Copied ${number} to clipboard`);
+          updateCounts();
+        });
+      });
+    });
+
+    clearHistoryBtn.addEventListener('click', () => {
+      history = [];
+      renderHistory();
+    });
+
+    updateCounts();
+  </script>
+</body>
+</html>
+
